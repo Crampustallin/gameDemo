@@ -2,36 +2,64 @@ package main
 
 import (
 	"fmt"
-	"image/color"
 	"log"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"golang.org/x/image/font"
 
+	"github.com/yohamta/donburi"
+
+	"github.com/Crampustallin/gameDemo/assets"
 	"github.com/Crampustallin/gameDemo/figures"
 )
 
 type Game struct{
-	player *figures.Character
+	world donburi.World
+	rect *donburi.ComponentType[figures.Character]
+	fontFace font.Face
+}
+
+func getRandomPosition(min, max float32) float32 {
+	return float32(min + rand.Float32()*(max-min))
 }
 
 func NewGame() *Game {
-	character := figures.NewCharacter(float64(0),float64(0),float64(10.5), float64(10.5))
+	words := [4]string{"board", "go", "guts", "proffessor"}
+	maxX, maxY := 270, 190
+	var minX, minY float32 = .0, .0
+	world := donburi.NewWorld()
+	rect := donburi.NewComponentType[figures.Character]()
+	world.CreateMany(len(words), rect)
+	rect.Each(world, func(entry *donburi.Entry) {
+		r := rect.Get(entry)
+		r.SetPlayerBody(float32(25),float32(25))
+		spawnX := getRandomPosition(minX, float32(maxX))
+		spawnY := getRandomPosition(minY, float32(maxY))
+		r.SetPlayerPos(spawnX, spawnY)
+		r.Word = words[1]
+	})
+	fontFace := assets.LoadFont()
+
 	return &Game{
-		player: character,
+		world: world, 
+		rect: rect,
+		fontFace: fontFace,
 	}
 }
 
+
 func (g *Game) Update() error {
-	x, y := ebiten.CursorPosition()
-	g.player.SetPlayerPos(x,y)
 	return nil
 }
 
+
 func (g *Game) Draw(screen *ebiten.Image) {
-	playerPosX, playerPosY := g.player.GetPlayerPos()
-	playerWidth, playerHeight := g.player.GetPlayerBody()
-	ebitenutil.DrawRect(screen, playerPosX, playerPosY,  playerWidth, playerHeight, color.White)
+	g.rect.Each(g.world, func(entry *donburi.Entry) {
+		r := g.rect.Get(entry)
+		r.DrawCharacter(screen, g.fontFace)
+	})
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.ActualFPS()))
 }
 
