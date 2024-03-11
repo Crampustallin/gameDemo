@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,12 +15,24 @@ type Game struct{
 	player *figures.Character
 }
 
+func NewGame() *Game {
+	character := figures.NewCharacter(float64(0),float64(0),float64(10.5), float64(10.5))
+	return &Game{
+		player: character,
+	}
+}
+
 func (g *Game) Update() error {
+	x, y := ebiten.CursorPosition()
+	g.player.SetPlayerPos(x,y)
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, World!")
+	playerPosX, playerPosY := g.player.GetPlayerPos()
+	playerWidth, playerHeight := g.player.GetPlayerBody()
+	ebitenutil.DrawRect(screen, playerPosX, playerPosY,  playerWidth, playerHeight, color.White)
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.ActualFPS()))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -27,8 +41,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Hello, World!")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	ebiten.SetWindowTitle("Word Hunter")
+	game := NewGame()
+	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }
