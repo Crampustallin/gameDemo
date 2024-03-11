@@ -6,10 +6,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
-	"figures"
+	"github.com/Crampustallin/gameDemo/figures"
 )
 
-type Game struct{}
+type Game struct{
+	player *figures.Character
+}
 
 func (g *Game) Update() error {
 	return nil

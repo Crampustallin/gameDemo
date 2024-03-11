@@ -7,6 +7,15 @@ type Character struct {
 	height float64
 }
 
+func newCharacter(x, y, width, height float64) *Character {
+	return &Character {
+		positionX: x,
+		positionY: y,
+		width: width,
+		height: height,
+	}
+}
+
 func (c *Character) setPlayerBody(width, height float64) {
 	c.width = width
 	c.height = height
