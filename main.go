@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -15,7 +16,7 @@ import (
 	"github.com/Crampustallin/gameDemo/figures"
 )
 
-type Game struct{
+type Game struct {
 	world donburi.World
 	rect *donburi.ComponentType[figures.Character]
 	fontFace font.Face
@@ -26,20 +27,28 @@ func getRandomPosition(min, max float32) float32 {
 }
 
 func NewGame() *Game {
-	words := [4]string{"board", "go", "guts", "proffessor"}
-	maxX, maxY := 270, 190
+	words := []string{ "board", "go", "guts", "proffessor", "despair" }
+	maxX, maxY := 270, 190 // TODO: set good values for new dots
 	var minX, minY float32 = .0, .0
 	world := donburi.NewWorld()
 	rect := donburi.NewComponentType[figures.Character]()
 	world.CreateMany(len(words), rect)
+	rnd  := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	rect.Each(world, func(entry *donburi.Entry) {
 		r := rect.Get(entry)
-		r.SetPlayerBody(float32(25),float32(25))
+		r.SetPlayerBody(float32(25), float32(25))
 		spawnX := getRandomPosition(minX, float32(maxX))
 		spawnY := getRandomPosition(minY, float32(maxY))
 		r.SetPlayerPos(spawnX, spawnY)
-		r.Word = words[1]
+		r.Word = words[rnd.Intn(len(words))]
 	})
+
+	if entry, ok := rect.First(world); ok {
+		r := rect.Get(entry)
+		r.IsActive = true
+	}
+	
 	fontFace := assets.LoadFont()
 
 	return &Game{
