@@ -32,21 +32,11 @@ func getRandomPosition(min, max float32) float32 {
 }
 
 func NewGame() *Game {
-	words := []string{ "board", "go", "guts", "proffessor", "despair" }
-	maxX, maxY := 270, 190 // TODO: set good values for new dots
-	var minX, minY float32 = .0, .0
 	world := donburi.NewWorld()
 	rect := donburi.NewComponentType[figures.Character]()
-	world.CreateMany(len(words), rect)
-	rnd  := rand.New(rand.NewSource(time.Now().UnixNano()))
-
+	world.CreateMany(4, rect)
 	rect.Each(world, func(entry *donburi.Entry) {
-		r := rect.Get(entry)
-		spawnX := getRandomPosition(minX, float32(maxX))
-		spawnY := getRandomPosition(minY, float32(maxY))
-		r.SetPlayerPos(spawnX, spawnY)
-		r.Word = words[rnd.Intn(len(words))]
-		r.SetPlayerBody(float32(10 * len(r.Word)), float32(10 * len(r.Word)))
+		rect.Set(entry, SpawnEnemy())
 	})
 
 	var activeEnemy *figures.Character;
@@ -67,6 +57,24 @@ func NewGame() *Game {
 	}
 }
 
+func SpawnEnemy() *figures.Character {
+	words := []string{ "board", "go", "guts", "proffessor", "despair", "deppression" }
+	rnd  := rand.New(rand.NewSource(time.Now().UnixNano()))
+	maxX, maxY := 270, 190 / 2 // TODO: set good values for new dots
+	var minX, minY float32 = .0, .0
+	spawnX := getRandomPosition(minX, float32(maxX))
+	spawnY := getRandomPosition(minY, float32(maxY))
+	Word := words[rnd.Intn(len(words))]
+	width, height := float32(10 * len(Word)), float32(10 * len(Word)) // TODO: need to do something with the figures
+	enemy := figures.Character{
+		X: spawnX,
+		Y: spawnY,
+		Word: Word,
+	}
+	enemy.SetPlayerBody(width, height)
+	return &enemy
+}
+
 
 func (g *Game) Update() error {
 	g.key = inpututil.AppendPressedKeys(g.key[:0])
@@ -76,8 +84,11 @@ func (g *Game) Update() error {
 			if g.activeEnemy.Word == "" {
 				entry, _ := g.rect.First(g.world)
 				entry.Remove()
-				if entry, has := g.rect.First(g.world); has {
-					g.activeEnemy = g.rect.Get(entry)
+				entity := g.world.Create(g.rect)
+				entry = g.world.Entry(entity)
+				g.rect.Set(entry, SpawnEnemy())
+				if newTarget, has := g.rect.First(g.world); has {
+					g.activeEnemy = g.rect.Get(newTarget)
 					g.activeEnemy.SetActive()
 				}
 			} else {

@@ -60,5 +60,5 @@ func (c *Character) Damage() {
 
 func (c *Character) DrawCharacter(screen *ebiten.Image, fontFace font.Face) {
 	vector.DrawFilledRect(screen, c.X, c.Y, c.width, c.height, c.figureColor, false)
-	text.Draw(screen, c.Word, fontFace, int(c.X - (c.width/2)), int(c.Y + (c.height / 2)), color.RGBA{R:255, G:165, B: 0, A:0})
+	text.Draw(screen, c.Word, fontFace, int(c.X), int(c.Y + (c.height * 1.5)), color.RGBA{R:255, G:165, B: 0, A:0})
 }
