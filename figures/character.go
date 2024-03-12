@@ -14,6 +14,7 @@ type Character struct {
 	width, height float32
 	Word string
 	IsActive bool
+	figureColor color.RGBA
 }
 
 func NewCharacter(x, y, width, height float32, word string) *Character {
@@ -30,12 +31,18 @@ func NewCharacter(x, y, width, height float32, word string) *Character {
 func (c *Character) SetPlayerBody(width, height float32) {
 	c.width = width
 	c.height = height
+	c.figureColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 }
 
 func (c *Character) SetPlayerPos(x, y float32) error {
 	c.X = x
 	c.Y = y
 	return nil
+}
+
+func (c *Character) SetActive() {
+	c.IsActive = true
+	c.figureColor = color.RGBA{R: 255, G: 0, B: 0, A:255}
 }
 
 func (c *Character) GetPlayerPos() (float32, float32) {
@@ -46,11 +53,12 @@ func (c *Character) GetPlayerBody() (float32, float32) {
 	return c.width, c.height
 }
 
+func (c *Character) Damage() {
+	c.width -= 10
+	c.height = c.width
+}
+
 func (c *Character) DrawCharacter(screen *ebiten.Image, fontFace font.Face) {
-	cl := color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	if c.IsActive {
-		cl.A, cl.G, cl.B = 0,0,0
-	}
-	vector.DrawFilledRect(screen, c.X, c.Y, c.width, c.height, cl, false)
-	text.Draw(screen, c.Word, fontFace, int(c.X - (c.width/2)), int(c.Y), color.White)
+	vector.DrawFilledRect(screen, c.X, c.Y, c.width, c.height, c.figureColor, false)
+	text.Draw(screen, c.Word, fontFace, int(c.X - (c.width/2)), int(c.Y + (c.height / 2)), color.RGBA{R:255, G:165, B: 0, A:0})
 }
