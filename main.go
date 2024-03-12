@@ -65,7 +65,7 @@ func SpawnEnemy() *figures.Character {
 	spawnX := getRandomPosition(minX, float32(maxX))
 	spawnY := getRandomPosition(minY, float32(maxY))
 	Word := words[rnd.Intn(len(words))]
-	width, height := float32(10 * len(Word)), float32(10 * len(Word)) // TODO: need to do something with the figures
+	width, height := float32(5 * len(Word)), float32(5 * len(Word)) // TODO: need to do something with the figures
 	enemy := figures.Character{
 		X: spawnX,
 		Y: spawnY,

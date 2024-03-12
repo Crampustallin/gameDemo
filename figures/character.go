@@ -54,7 +54,7 @@ func (c *Character) GetPlayerBody() (float32, float32) {
 }
 
 func (c *Character) Damage() {
-	c.width -= 10
+	c.width -= 5
 	c.height = c.width
 }
 
