@@ -77,7 +77,7 @@ func SpawnEnemy() *figures.Character {
 
 
 func (g *Game) Update() error {
-	g.key = inpututil.AppendPressedKeys(g.key[:0])
+	g.key = inpututil.AppendJustPressedKeys(g.key[:0])
 	for _, key := range g.key {
 		if after, found := strings.CutPrefix(g.activeEnemy.Word, strings.ToLower(key.String())); found { // TODO: find a better way to check if key is right
 			g.activeEnemy.Word = after
