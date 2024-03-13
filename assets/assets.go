@@ -12,6 +12,8 @@ import (
 var (
 	//go:embed all:fonts
 	gameAssets embed.FS
+	//go:embed audio/kick-hard.mp3
+	Kick_hard []byte
 )
 
 func LoadFont() font.Face {

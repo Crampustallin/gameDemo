@@ -10,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 
 	"golang.org/x/image/font"
 
@@ -25,6 +26,7 @@ type Game struct {
 	activeEnemy *figures.Character
 	fontFace font.Face
 	key []ebiten.Key
+	audioContext *audio.Context
 }
 
 func getRandomPosition(min, max float32) float32 {
@@ -50,10 +52,11 @@ func NewGame() *Game {
 	fontFace := assets.LoadFont()
 
 	return &Game{
-		world: world, 
+		world: world,
 		rect: rect,
 		fontFace: fontFace,
 		activeEnemy: activeEnemy,
+		audioContext: audio.NewContext(4410),
 	}
 }
 
@@ -93,6 +96,8 @@ func (g *Game) Update() error {
 				}
 			} else {
 				g.activeEnemy.Damage() // TODO: add animation when a character is taking damage
+				p := g.audioContext.NewPlayerFromBytes(assets.Kick_hard)
+				p.Play()
 			}
 		}
 	}
